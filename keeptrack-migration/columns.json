@@ -1,0 +1,34 @@
+{
+    "numeric": [
+      "short_call", "goodbye", "success", "transfer_success", "announcement_active",
+      "central_success", "concerns_success", "disambiguation_success", "diy_success",
+      "escalation", "faq_central", "faq_count", "faq_helpful", "faq_success",
+      "legitimation_backend_result", "legitimation_date", "legitimation_name",
+      "legitimation_postcode", "legitimation_result_sign", "legitimation_status_sign",
+      "legitimation_streetname", "legitimation_success", "legitimation_townname",
+      "optin_active", "optin_result", "resolution_success", "specification_success"
+    ],
+    "pii": [
+      "gc_ani", "legitimation_customernumber",
+      "central_utterance", "disambiguation_utterance", "diy_utterance",
+      "resolution_utterance", "specification_utterance", "specification_utterancel"
+    ],
+    "all": [
+      "call_id", "date", "starttime", "endtime", "short_call", "gc_ani", "gc_dnis",
+      "module_seq", "goodbye", "success", "transfer_success", "exit_module", "reason",
+      "announcement_active", "category", "concern", "central_category", "central_concern",
+      "central_keywords", "central_success", "central_utterance", "concerns_success",
+      "disambiguation_result", "disambiguation_subject", "disambiguation_success",
+      "disambiguation_utterance", "diy_keywords", "diy_name", "diy_question", "diy_success",
+      "diy_utterance", "escalation_module", "escalation", "faq_central", "faq_count",
+      "faq_helpful", "faq_name", "faq_success", "legitimation_backend_result",
+      "legitimation_configured", "legitimation_customernumber", "legitimation_date",
+      "legitimation_name", "legitimation_postcode", "legitimation_result_sign",
+      "legitimation_status_result", "legitimation_status_sign", "legitimation_streetname",
+      "legitimation_success", "legitimation_townname", "optin_active", "optin_result",
+      "resolution_keywords", "resolution_result", "resolution_success", "resolution_utterance",
+      "specification_keywords", "specification_result", "specification_success",
+      "specification_type", "specification_utterance", "duration_seconds", "specification_utterancel",
+      "event_date", "event_hour"
+    ]
+  }
