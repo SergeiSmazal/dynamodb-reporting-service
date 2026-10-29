@@ -37,9 +37,9 @@ def duration_seconds(raw):
 
 
 def transform(row):
-    """Возвращает item для DynamoDB. Бросает ValueError, если строка некорректна."""
+    """Returns a DynamoDB item. Raises ValueError if row is invalid."""
     if not row.get("call_id") or not row.get("starttime"):
-        raise ValueError("нет call_id или starttime")
+        raise ValueError("missing call_id or starttime")
 
     item = {}
     for key, value in row.items():
@@ -56,8 +56,8 @@ def transform(row):
         else:
             item[key] = value
 
-    item["event_date"] = row["starttime"][:10]  # локальная дата
-    item["event_hour"] = row["starttime"][11:13]  # локальный час
+    item["event_date"] = row["starttime"][:10]  # local date
+    item["event_hour"] = row["starttime"][11:13]  # local hour
     return item
 
 
@@ -75,13 +75,13 @@ def migrate(path):
             except (ValueError, ArithmeticError) as exc:
                 rejects.append((line_no, row.get("call_id", ""), str(exc)))
             if loaded and loaded % 1000 == 0:
-                print(f"Загружено {loaded}...")
+                print(f"Loaded {loaded}...")
 
-    print(f"Готово: загружено {loaded}, отклонено {len(rejects)}")
+    print(f"Done: loaded {loaded}, rejected {len(rejects)}")
     if rejects:
         with open("rejects.csv", "w", newline="", encoding="utf-8") as out:
             csv.writer(out).writerows([("line", "call_id", "error"), *rejects])
-        print("Список отклонённых строк: rejects.csv")
+        print("Rejected rows saved to: rejects.csv")
 
 
 if __name__ == "__main__":

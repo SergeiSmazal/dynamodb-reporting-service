@@ -29,9 +29,9 @@ function localToUtcIso(s) {
   const [Y, M, D] = d.split("-").map(Number);
   const [h, m, sec] = t.split(":").map(Number);
   const guess = Date.UTC(Y, M - 1, D, h, m, sec);
-  
-  // Zwei Kandidaten: Offset einen Tag vor und nach dem Datum. Der passende liefert die ursprüngliche Ortszeit.
-  // Bei mehrdeutiger Zeit (Zeitumstellung im Herbst) wird das erste Vorkommen verwendet, analog zu migrate.py.
+
+  // Two candidates: offset one day before and after the date. The matching one yields the original local time.
+  // For ambiguous time (fall DST transition), the first occurrence is used, same as migrate.py.
   const before = guess - tzOffsetMs(guess - 86400000, SOURCE_TZ);
   const after = guess - tzOffsetMs(guess + 86400000, SOURCE_TZ);
   const valid = [before, after].filter((u) => u + tzOffsetMs(u, SOURCE_TZ) === guess);
@@ -46,8 +46,8 @@ function durationSeconds(raw) {
 }
 
 function buildItem(input) {
-  if (!input.call_id || typeof input.call_id !== "string") throw new Error("call_id ist erforderlich");
-  if (!TIME_RE.test(input.starttime ?? "")) throw new Error("starttime: Format YYYY-MM-DD HH:MM:SS erwartet");
+  if (!input.call_id || typeof input.call_id !== "string") throw new Error("call_id is required");
+  if (!TIME_RE.test(input.starttime ?? "")) throw new Error("starttime: expected format YYYY-MM-DD HH:MM:SS");
 
   const item = {};
   for (const [key, value] of Object.entries(input)) {
@@ -58,8 +58,8 @@ function buildItem(input) {
     else if (NUMERIC.has(key)) item[key] = Number(value);
     else item[key] = value;
   }
-  item.event_date = input.starttime.slice(0, 10); // lokales Datum
-  item.event_hour = input.starttime.slice(11, 13); // lokale Stunde
+  item.event_date = input.starttime.slice(0, 10); // local date
+  item.event_hour = input.starttime.slice(11, 13); // local hour
   return item;
 }
 
@@ -73,13 +73,13 @@ export const handler = async (event) => {
   }
 
   try {
-    // Idempotentes Schreiben: Das erneute Senden derselben call_id überschreibt den Datensatz.
-    // Falls Duplikate nicht erlaubt sind, ConditionExpression hinzufügen: "attribute_not_exists(call_id)".
+    // Idempotent write: resending the same call_id overwrites the record.
+    // If duplicates should be rejected, add ConditionExpression: "attribute_not_exists(call_id)".
     await doc.send(new PutCommand({ TableName: TABLE, Item: item }));
     return { statusCode: 200, body: JSON.stringify({ call_id: item.call_id }) };
   } catch (err) {
-    console.error("Fehler beim Schreiben in DynamoDB", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Daten konnten nicht gespeichert werden" }) };
+    console.error("Error writing to DynamoDB", err);
+    return { statusCode: 500, body: JSON.stringify({ error: "Data could not be saved" }) };
   }
 };
 
